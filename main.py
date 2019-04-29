@@ -1,10 +1,23 @@
-import pygame
-import sys
+import pygame, sys
+import random
+
+class Runner():
+    __customes = ('turtle', 'fish', 'prawn', 'moray', 'octopus')
+    
+    def __init__(self, x=0, y=0, custome='turtle'):
+        self.custome = pygame.image.load("images/turtle2.png")
+        self.position = [x, y]
+        self.name = custome
+    
+    def avanzar(self):
+        self.position[0] += random.randint(1, 6)
+
 
 class Game():
-    
-    corredores = []
-    __startLine = 20
+    runners = []
+    __posY = (100, 145, 215, 275)
+    __names = ("Speedy", "Fishyy", "Rehis", "MocoCoco")
+    __startLine = 5
     __finishLine = 620
     
     def __init__(self):
@@ -12,32 +25,36 @@ class Game():
         pygame.display.set_caption("Carrera de bichos")
         self.background = pygame.image.load("images/background.png")
         
-        self.runner = pygame.image.load("images/smalball.png")
+        for i in range(4):
+            theRunner = Runner(self.__startLine, self.__posY[i])
+            theRunner.name = self.__names[i]
+            self.runners.append(theRunner)
        
     def competir(self):
-        
-        x = 0
         gameOver = False
-        
-        while True:
+        while not gameOver:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    pygame.quit()
-                    sys.exit()
-                    
-                    
-            self.__screen.blit(self.background, (0,0))
-            self.__screen.blit(self.runner, (x, 240))
-            pygame.display.flip()
+                    gameOver = True
             
-            x += 3
-            if x >= 250:
+            for runner in self.runners:
+                runner.avanzar()
+            
+            if self.runners[0].position[0] >= self.__finishLine:
+                print("{} ha ganado".format(self.runners[0].name))
                 gameOver = True
-                
+            
+            self.__screen.blit(self.background, (0,0))
+            
+            for runner in self.runners:
+                self.__screen.blit(runner.custome, runner.position)
+            
+            pygame.display.flip()
+               
         pygame.quit()
         sys.exit()
        
 if __name__ == '__main__':
-    pygame.init()
     game = Game()
+    pygame.font.init()
     game.competir()
